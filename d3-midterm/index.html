@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Interactive DataViz Midterm</title>
+  <meta name="author" content="@clhenrick">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FYI this is an HTML comment, it will be ignored by the browser -->
+  <!-- load the d3 library locally -->
+  <!-- we could load the non-minified version, plain old "d3.js", for debugging purposes instead if desired -->
+  <script src="./lib/d3.min.js"></script>
+
+  <!-- Our CSS goes within the <style> tag -->
+  <!-- Like JS, we could also link to an external CSS file using the <link /> tag -->
+  <style>
+    /* here's how we write a comment in CSS */
+    body {
+      margin:0;
+      padding: 0;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    /*
+     * Styling for our legend and its child elements
+     */
+    .legend {
+      padding: 10px;
+    }
+
+    .legend .legend-item {
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    .legend .legend-item:first-child {
+      margin-left: 0;
+    }
+
+    .legend .color-box {
+      width: 11px;
+      height: 11px;
+      display: inline-block;
+    }
+
+    .legend p {
+      font-size: 11px;
+      margin: 0;
+      padding-left: 5px;
+      display: inline;
+    }
+  </style>
+
+</head>
+<body>
+  <script src="solution-1.js"></script>
+  <!-- <script src="solution-2.js"></script> -->
+</body>
