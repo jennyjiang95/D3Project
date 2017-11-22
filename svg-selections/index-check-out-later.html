@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>04: SVG, Selections, Data Binding</title>
+  <meta name="author" content="your name here">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FYI this is an HTML comment, it will be ignored by the browser -->
+  <!-- load the d3 library locally -->
+  <!-- we could load the non-minified version, plain old "d3.js", for debugging purposes instead if desired -->
+  <script src="./d3.min.js"></script>
+
+  <!-- Our CSS goes within the <style> tag -->
+  <!-- Like JS, we could also link to an external CSS file using the <link /> tag -->
+  <style>
+
+    /* here's how we write a comment in CSS */
+    body {
+      margin:0;
+      padding: 0;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+  </style>
+
+</head>
+
+<!-- all visible HTML goes within the <body> tag -->
+<body>
+
+  <!-- any html goes ABOVE the script tag below, this includes <canvas>, <svg>, <div>, etc. -->
+
+    <svg width="720" height="500"> <!-- the area we draw-->
+
+      <!--created a circle-->
+      <circle cx="60" cy="80" r="30" fill="orange" stroke="blue" stroke-width="3" ><!--attributes-->
+      </circle> 
+      <circle cx="60" cy="140" r="30" fill="red" stroke="blue" stroke-width="3"></circle>
+      <circle cx="60" cy="200" r="30" fill="orange" stroke="blue" stroke-width="3"></circle>
+      <circle cx="60" cy="260" r="30" fill="red" stroke="blue" stroke-width="3"></circle>
+      <circle cx="180" cy="80" r="30" fill="orange" stroke="blue" stroke-width="3"></circle>
+
+
+      <!--created a rectangle-->
+      <rect width="700" height="500" stroke="#333" stroke-width="5" fill="none"> 
+      </rect>
+
+      <!--created a path-->
+      <!--first move, then draw a line.-->
+      <path d="M 40 200 L 200 200 L 150 250 Z" fill="magenta" stroke="green" stroke-width="4">
+      </path>
+
+
+      <!--group things-->
+      <!--all of these things could ONLY be used within svg-->
+      <!--transform/translate -->
+      <g transform="translate(0,350)">
+        <!--give the text-->
+        <text x="610" y="30" style="font-family: Arial;"> Hello World</text>
+        <!--create another circle-->
+        <circle cx="200" cy="50" r="100" opacity="0.3" fill= "yellow"></circle>
+
+      </g>
+
+    </svg>  
+
+  <script>
+    // js code either goes in here, or we use a link to an external js file
+    d3.selectAll('circle').filter(function(d){
+      return d3.select(this).attr('fill') == "orange";
+      // get or set. if we don't set, then we get  the value.
+    })
+    .remove();
+    // remove all fill with red circles
+
+    d3.select('svg')
+      .append('rect')
+      .attr('x', 300)
+      .attr('y', 20)
+      .attr('width', 80)
+      .attr('height', 500)
+      .attr('fill', "cornflowerblue")
+      .attr('opacity', 0.8)
+
+  </script>
+
+</body>
+
+
+
+
+
+
+
+
+
+
+
