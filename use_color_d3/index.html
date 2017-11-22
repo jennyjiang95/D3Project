@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>09: Using Color with D3</title>
+  <meta name="author" content="your name here">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FYI this is an HTML comment, it will be ignored by the browser -->
+  <!-- load the d3 library locally -->
+  <!-- we could load the non-minified version, plain old "d3.js", for debugging purposes instead if desired -->
+  <script src="./lib/d3.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+  <!-- Our CSS goes within the <style> tag -->
+  <!-- Like JS, we could also link to an external CSS file using the <link /> tag -->
+  <style>
+    /* here's how we write a comment in CSS */
+    body {
+      margin:0;
+      padding: 0;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-align: center;
+    }
+
+    .timeLabel,
+    .dayLabel {
+      font-size: 16px;
+      fill: #AAA;
+      font-weight: 300;
+    }
+
+    .legend-title {
+      font-size: 11px;
+    }
+
+    .no-axis path,
+    .no-axis .tick,
+    .no-axis line {
+      fill: none;
+      stroke: none;
+    }
+  </style>
+
+</head>
+
+<!-- all visible HTML goes within the <body> tag -->
+<body>
+  <!-- TO DO: add script tags for your main.js file -->
+  <script src="main.js"></script>
+</body>
