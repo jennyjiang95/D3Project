@@ -1,56 +1,36 @@
-// main.js
-
-console.log('Hello World from main.js!');
-
-
 //knowledge points:
 // 1. d3-force: charge and collide
 // 2. GeoJSON and CSV: d3.queue()
 // 3. 
 
 // define margin
-var margin = {top: 20, right: 20, bottom: 100, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom,
-    padding = 3;
-
-
-
-//define svg, the main body part
-// var svg = d3.select('svg'),
-//     width = +svg.attr('width'),  //make it to number
-//     height = +svg.attr('height');  //make it to number
+var margin = { top: 20, right: 20, bottom: 100, left: 40 },
+	width = 960 - margin.left - margin.right,
+	height = 500 - margin.top - margin.bottom,
+	padding = 3;
 
 
 var svg = d3.select('body').append('svg')
-			.attr('width', width + margin.left + margin.right)
-			.attr('height', height + margin.top + margin.bottom)
-			.append('g')
-			.attr('transform', `translate(${margin.left}, ${margin.top})`);
+	.attr('width', width + margin.left + margin.right)
+	.attr('height', height + margin.top + margin.bottom)
+	.append('g')
+	.attr('transform', `translate(${margin.left}, ${margin.top})`);
 
+// var area = d3.scaleSqrt()
+//  .range([2, 50]);
 
-
-// use this to size the circles 
-//radius????  or area?????
-
-
+//define the radius
 var radius = d3.scaleSqrt()
-	.range([01,56]);
+	.range([01, 25]);
 
- // var area = d3.scaleSqrt()
- //  .range([2, 50]);
 
 //define the color scheme
 var color = d3.scaleQuantize()
-		.domain([0, 1])
-		.range(["white", "steelblue"]);
+  .range(['#007AFF', '#FEB24C']);
+	// .range(["white", "steelblue"]);
 
 //define the projection 
- var projection = d3.geoAlbersUsa();
-
-// define this so later we use it for population.get(d.id)
- var population = d3.map();
-
+var projection = d3.geoAlbersUsa();
 
 // load two datasets using d3.queue
 d3.queue()
@@ -61,123 +41,164 @@ d3.queue()
 function main(error, pop_income, geojson) {
 	if (error) throw error;  // if error throw error
 
-	// console.log(pop_income);
-
-	// console.log(geojson);
-
-	var population = d3.map(pop_income);
-
-	// console.log('hello!');
-
-	// console.log(population);
 
 
-	var nodes = geojson.features.map(function(d) {
-	  var point = projection(d.geometry.coordinates),
-	  	  // // value = pop_income(+d.id)
-	  	  // check = population.get(d.toal_pop),
-	      value = population.get(d.id);   // this does not work! LOL
+	radius.domain([0, d3.max(pop_income, function (m) {
+			return m.toal_pop;
+		})]);
 
+	color.domain([d3.min(pop_income, function(m) {
+			return m.toal_pop;}), 
+			d3.max(pop_income, function (m) {
+			return m.toal_pop;
+		})]);
 
-	  return {
-	    id: d.id,
-	    name: d.properties.name,
-	    label: d.properties.label,
-	    coords: d.geometry.coordinates,
-	    x: point[0],
-	    y: point[1],
-	    x0: point[0],
-	    y0: point[1],
-	    r: radius(value),
-	    value: value, 
-	    check: d.toal_pop,
-	    pop: pop_income.toal_pop,
-	  };
-	});
+	// this is to make sure the id works. call back below
+	var population = d3.map(pop_income, (d) => d.id);
 
-	console.log(nodes);
+	// read in the data
+	var nodes = geojson.features.map(function (d) {
+		var point = projection(d.geometry.coordinates),
+			value = population.get(parseInt(d.id))
+			// value = population.get(parseInt(d.id)).toal_pop;   
 
-	var data = pop_income.map(function (m) {
 		return {
-			population: m.toal_pop,
-			income: m.median_income
+			id: d.id,
+			name: d.properties.name,
+			label: d.properties.label,
+			coords: d.geometry.coordinates,
+			x: point[0],
+			y: point[1],
+			x0: point[0],
+			y0: point[1],
+			r: radius(value.toal_pop),   //right now just to do it use total population
+			value: value, 
+			pop: value.toal_pop,
+			income: value.median_income
 		};
 	});
 
-	console.log(data);
-
-
-
-	radius.domain([0, d3.max(pop_income, function(m) {
-		return m.population;
-	})]);
-
-	  // console.log(nodes);
-
-	  console.log("checking here!");
-
-
-	 
-	  // var extent = d3.extent(nodes, function(m) {
-	  // 	return d.pop;
-	  // });
-
-	  // radius.domain(extent);
-	  // color.domain(extent);
+	//check if the data load in correct
+	console.log(nodes);
 
 
 
 
-	  var simulation = d3.forceSimulation(nodes)
-	  	.force('charge', d3.forceManyBody().strength(1))
-	  	.force(
-	  		'collision', 
-	  		d3.forceCollide().strength(1) 
-	  			.radius(function(d) {
-	  				return radius(d.pop);
-	  			}))
-	  		.stop();
+	// var extent = d3.extent(nodes, function(d) {
+	// 	return d.r;
+	// });
+
+	// radius.domain(extent);
 
 
-	    for (var i = 0; i < 150; i++) {
-			simulation.tick();
-			}
-			ticked();
+	// color.domain(extent);
 
 
-	  function ticked() {
+	// 	//define the radius
+	// var radius = d3.scaleSqrt()
+	// 	.domain([0, d3.max(pop_income, function (m) {
+	// 		return m.toal_pop;
+	// 	})])
+	// 	.range([01, 25]);
 
-	  var bubbles = d3.select('svg')
-	  		.selectAll('circle')
-	  		.data(nodes, function(d) {
-	  			return d.name;
-	  		});
 
 
-	  bubbles.enter()
-	  	.append('circle')
-	  	.merge(bubbles)  // the merge, will allow us to create the circle and udpate bubbles at the same time
-	  	.attr('r', 10)   // i can't change the radius
-	  	// .attr('r', function(d) {
-	  	// 	return radius(d.pop);
-	  	// })
-	  	.attr('cx', function(d) {
-	  		return d.x;
-	  	})
-	  	.attr('cy', function(d) {
-	  		return d.y;
-	  	})
-	  	.attr('fill', function(d) {
-	  		return color(d.toal_pop);
-	  	})
-	  	.attr('stroke', '#333')
+	// var color = d3.scaleQuantize()
+	// 	.domain([d3.min(pop_income, function(m) {
+	// 		return m.toal_pop;}), 
+	// 		d3.max(pop_income, function (m) {
+	// 		return m.toal_pop;
+	// 	})])
+	// 	.range(["white", "steelblue"]);
 
-}; ///////////////////////////////  end of the main function
+
+	//chekc if the radius work!
+	console.log(radius(11000))
+
+
+	// color.domain(d3.extent(nodes, d => d.r));
+
+
+
+
+
+	// simulations
+
+	var simulation = d3.forceSimulation(nodes)
+		.force('charge', d3.forceManyBody().strength(1))
+		.force(
+		'collision',
+		d3.forceCollide().strength(1)
+			.radius(function (d) {
+				return radius(d.pop);
+			}))
+		.stop();
+
+
+	for (var i = 0; i < 150; i++) {
+		simulation.tick();
+	}
+	ticked();
+
+
+	function ticked() {
+
+		var bubbles = d3.select('svg')
+			.selectAll('circle')
+			.data(nodes, function (d) {
+				return d.name;
+			});
+
+
+		bubbles.enter()
+			.append('circle')
+			.merge(bubbles)  // the merge, will allow us to create the circle and udpate bubbles at the same time
+			.attr('r', (d) => d.r)   // i can't change the radius
+			// .attr('r', function(d) {
+			// 	return radius(d.pop);
+			// })
+			.attr('cx', function (d) {
+				return d.x;
+			})
+			.attr('cy', function (d) {
+				return d.y;
+			})
+			.attr('fill', (d) => color(d.r))
+			// .attr('fill', function (d) {
+			// 	return color(d.toal_pop);
+			// })
+			.attr('stroke', '#333')
+			.on('mouseover', function(d) {
+		        tooltip.html(d.name + "<br>" + d.r.toLocaleString());
+		        tooltip.style('visibility', 'visible');
+		        d3.select(this).attr('stroke', 'green');
+		      })
+		      .on('mousemove', function() {
+		        tooltip.style('top', (d3.event.pageY - 10) + 'px')
+		          .style('left', (d3.event.pageX + 10) + 'px');
+		      })
+		      .on('mouseout', function() {
+		        tooltip.style('visibility', 'hidden');
+		        d3.select(this).attr('stroke', '#333');
+		      });
+
+	}; ///////////////////////////////  end of the main function
 
 
 };
 
 
+var tooltip = d3.select('body')
+	.append('div')
+	.style('position', 'absolute')
+	.style('visibility', 'hidden')
+	.style('color', 'white')
+	.style('padding', '8px')
+	.style('background-color', '#626D71')
+	.style('border-radius', '6px')
+	.style('text-align', 'center')
+	.style('font-family', 'monospace')
+	.text('');
 
 
 
@@ -195,6 +216,14 @@ function main(error, pop_income, geojson) {
 
 
 
+
+
+	// var data = pop_income.map(function (m) {
+	// 	return {
+	// 		population: m.toal_pop,
+	// 		income: m.median_income
+	// 	};
+	// });
 
 
 
