@@ -22,8 +22,6 @@ To complete this assignment and receive full credit you must:
 - [ ] show a tooltip when mousing over the circles that displays the full state name and current data facet value
 - [ ] render the legend using `d3-legend`
 - [ ] have the cartogram toggle showing the "total population" and "median income" facets via an HTML button
-- [ ] complete this assignment on your own
-- [ ] commit your changes incrementally and descriptively to this repo and push them to its remote url
 - [ ] comment each code block in your own words
 
 ## Hints
