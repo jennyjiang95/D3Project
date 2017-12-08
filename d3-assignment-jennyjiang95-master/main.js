@@ -26,7 +26,7 @@ var radius = d3.scaleSqrt()
 
 //define the color scheme
 var color = d3.scaleQuantize()
-  .range(['#007AFF', '#FEB24C']);
+	.range(['#ffffff', '#4682b4']);
 	// .range(["white", "steelblue"]);
 
 //define the projection 
@@ -47,11 +47,16 @@ function main(error, pop_income, geojson) {
 			return m.toal_pop;
 		})]);
 
-	color.domain([d3.min(pop_income, function(m) {
-			return m.toal_pop;}), 
-			d3.max(pop_income, function (m) {
-			return m.toal_pop;
-		})]);
+
+	//chekc if the radius work!
+	console.log(radius(11000));
+
+
+	// color.domain([d3.min(pop_income, function(m) {
+	// 		return m.toal_pop;}), 
+	// 		d3.max(pop_income, function (m) {
+	// 		return m.toal_pop;
+	// 	})]);
 
 	// this is to make sure the id works. call back below
 	var population = d3.map(pop_income, (d) => d.id);
@@ -82,6 +87,9 @@ function main(error, pop_income, geojson) {
 	console.log(nodes);
 
 
+	color.domain(d3.extent(nodes, d => d.r));
+
+	// color.domain(radius);
 
 
 	// var extent = d3.extent(nodes, function(d) {
@@ -112,8 +120,6 @@ function main(error, pop_income, geojson) {
 	// 	.range(["white", "steelblue"]);
 
 
-	//chekc if the radius work!
-	console.log(radius(11000))
 
 
 	// color.domain(d3.extent(nodes, d => d.r));
@@ -182,10 +188,39 @@ function main(error, pop_income, geojson) {
 		        d3.select(this).attr('stroke', '#333');
 		      });
 
-	}; ///////////////////////////////  end of the main function
+	}; 
 
 
-};
+
+  // create a legend for our chart, outside of the chart itself
+  // we'll house the legend inside a div element
+  var legend = d3.select('body')
+    .append('div')
+    .classed('legend', true)
+    .datum(color.domain()); // bind country names data as a singular bound datum
+
+  // create the legend items with color boxes and labels
+  legend.selectAll('.legend-item')
+    .data(function(d) { return d; }) // binding the data using values from legend.datum() above
+    .enter().append('div') // make a div for each country name
+    .classed('legend-item', true)
+    .each(function(d) { // we haven't gone over selection.each() yet, think of it like a "for loop"
+      console.log(d, this);
+      // select the individual div.legend-item
+      var item = d3.select(this);
+
+      // add another div for the color box
+      item.append('div')
+        .classed('color-box', true)
+        .style('background-color', function(d) { return color(d); })
+
+      // add the label
+      item.append('p')
+        .text(d);
+    });
+
+
+}; ///////////////////////////////  end of the main function
 
 
 var tooltip = d3.select('body')
