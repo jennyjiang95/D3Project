@@ -152,13 +152,14 @@ function main(error, pop_income, geojson) {
 		var bubbles = d3.select('svg')
 			.selectAll('circle')
 			.data(nodes, function (d) {
-				return d.name;
+				return d.label;
 			});
 
 
 		bubbles.enter()
 			.append('circle')
 			.merge(bubbles)  // the merge, will allow us to create the circle and udpate bubbles at the same time
+			// .append('text')
 			.attr('r', (d) => d.r)   // i can't change the radius
 			// .attr('r', function(d) {
 			// 	return radius(d.pop);
@@ -174,6 +175,7 @@ function main(error, pop_income, geojson) {
 			// 	return color(d.toal_pop);
 			// })
 			.attr('stroke', '#333')
+      		.text(function(d) { return d.label;})
 			.on('mouseover', function(d) {
 		        tooltip.html(d.name + "<br>" + d.r.toLocaleString());
 		        tooltip.style('visibility', 'visible');
@@ -188,36 +190,82 @@ function main(error, pop_income, geojson) {
 		        d3.select(this).attr('stroke', '#333');
 		      });
 
+		   bubbles.enter()
+			.append('circle')
+			.merge(bubbles)  // the merge, will allow us to create the circle and udpate bubbles at the same time
+			.append('text')
+			.attr('r', (d) => d.r)   // i can't change the radius
+			// .attr('r', function(d) {
+			// 	return radius(d.pop);
+			// })
+			.attr('cx', function (d) {
+				return d.x;
+			})
+			.attr('cy', function (d) {
+				return d.y;
+			})
+			.attr('fill', (d) => color(d.r))
+			// .attr('fill', function (d) {
+			// 	return color(d.toal_pop);
+			// })
+			.attr('stroke', '#333')
+      		.text(function(d) { return d.label;})
+
+
 	}; 
 
 
 
-  // create a legend for our chart, outside of the chart itself
-  // we'll house the legend inside a div element
-  var legend = d3.select('body')
-    .append('div')
-    .classed('legend', true)
-    .datum(color.domain()); // bind country names data as a singular bound datum
+  // // create a legend for our chart, outside of the chart itself
+  // // we'll house the legend inside a div element
+  // var legend = d3.select('body')
+  //   .append('div')
+  //   .classed('legend', true)
+  //   .datum(color.domain()); // bind country names data as a singular bound datum
 
-  // create the legend items with color boxes and labels
-  legend.selectAll('.legend-item')
-    .data(function(d) { return d; }) // binding the data using values from legend.datum() above
-    .enter().append('div') // make a div for each country name
-    .classed('legend-item', true)
-    .each(function(d) { // we haven't gone over selection.each() yet, think of it like a "for loop"
-      console.log(d, this);
-      // select the individual div.legend-item
-      var item = d3.select(this);
+  // // create the legend items with color boxes and labels
+  // legend.selectAll('.legend-item')
+  //   .data(function(d) { return d; }) // binding the data using values from legend.datum() above
+  //   .enter().append('div') // make a div for each country name
+  //   .classed('legend-item', true)
+  //   .each(function(d) { // we haven't gone over selection.each() yet, think of it like a "for loop"
+  //     console.log(d, this);
+  //     // select the individual div.legend-item
+  //     var item = d3.select(this);
 
-      // add another div for the color box
-      item.append('div')
-        .classed('color-box', true)
-        .style('background-color', function(d) { return color(d); })
+  //     // add another div for the color box
+  //     item.append('div')
+  //       .classed('color-box', true)
+  //       .style('background-color', function(d) { return color(d); })
 
-      // add the label
-      item.append('p')
-        .text(d);
-    });
+  //     // add the label
+  //     item.append('p')
+  //       .text(d);
+  //   });
+
+
+
+    // draw legend
+  var legend = svg.selectAll(".legend")
+      .data(color.range())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  // draw legend colored rectangles
+  legend.append("circle")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", function(d) {return d;});
+
+  // draw legend text
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d;});
 
 
 }; ///////////////////////////////  end of the main function
