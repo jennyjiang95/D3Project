@@ -26,7 +26,7 @@ var radius = d3.scaleSqrt()
 
 //define the color scheme
 var color = d3.scaleQuantize()
-	.range(['#ffffff', '#4682b4']);
+	.range(['#f1eef6', '#bdc9e1', '#74a9cf', '#2b8cbe', '#045a8d']);
 	// .range(["white", "steelblue"]);
 
 //define the projection 
