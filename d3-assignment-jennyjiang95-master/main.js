@@ -253,7 +253,7 @@ function main(error, pop_income, geojson) {
       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
   // draw legend colored rectangles
-  legend.append("circle")
+  legend.append("rect")
       .attr("x", width - 18)
       .attr("width", 18)
       .attr("height", 18)
@@ -307,52 +307,4 @@ var tooltip = d3.select('body')
 	// 		income: m.median_income
 	// 	};
 	// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
