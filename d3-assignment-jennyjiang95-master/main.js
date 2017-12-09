@@ -50,6 +50,10 @@ var tooltip = d3.select('body')
 	.style('font-family', 'monospace')
 	.text('');
 
+// Add the toggle button
+var button = d3.select('body')
+  .append('button')
+  .text('Total Population');
 
 // We will use this boolean flag to keep track of the toggle status
 var populationMode = true;
@@ -64,11 +68,6 @@ function main(error, pop_income, geojson) {
 
 	// Call the first render of the chart
 	setupChart(pop_income, geojson);
-
-	// Add the toggle button
-	var button = d3.select('body')
-	  .append('button')
-	  .text('Update');
   
 	// Binding updateChart() to handling 'click' button of the one 
 	// we just added
@@ -172,13 +171,12 @@ function setupChart(pop_income, geojson) {
 	.attr("dy", ".35em")
 	.style("text-anchor", "end")
 	.text(function(d) { return d;});
-}
+}   ///////////////////////////////  end of the setup chart function
 
 // @function updateChart Contains the logic for updating the chart simulation
 // @param {array} pop_income: The population income parsed data
 // @param {array} geojson: The geoJson parsed data
 function updateChart(pop_income, geojson) {
-	//call this to make sure we are updating chart
 	console.log("Updating chart");
 
 	// toggle mode
@@ -223,28 +221,35 @@ function updateChart(pop_income, geojson) {
 	});
 
 	// Define all force simulation objects
+	if (populationMode) {
+		radiusValue = 'pop';
+		button.text('Total Population');
+	} else {
+		radiusValue = 'income';
+		button.text('Median Income');
+	}
 	var simulation = d3.forceSimulation(nodes)
-	.force('charge', d3.forceManyBody().strength(1))
-	.force(
-		'collision',
-		d3.forceCollide().strength(1)
-			.radius(function (d) {
-				return radius(d.income);
-			}))
-	.stop();
+		.force('charge', d3.forceManyBody().strength(1))
+		.force(
+			'collision',
+			d3.forceCollide().strength(1)
+				.radius(function (d) {
+					return radius(d[radiusValue]);
+				}))
+		.stop();
 
 	console.log("Simulation is %O", simulation);
 
 	// Tick each simulation object
-	for (var i = 0; i < 200; i++) {
+	for (var i = 0; i < 150; i++) {
 		console.log("Ticking simulation");
 		simulation.tick();
 	}
 
-		// Call ticked with nodes
-		ticked(nodes);
-}
-
+	// Call ticked with nodes
+	ticked(nodes);
+}  ///////////////////////////////  end of the update chart function
+ 
 
 // @function ticker: This function renders the bubble chart and is re-used by setupChart and updateChart
 // @param {array} nodes: The already linked data
@@ -310,5 +315,5 @@ function ticked(nodes) {
 				.text(function(d) { return d.label;})
 
 
-}
+}   ///////////////////////////////  end of the ticked chart function
 
