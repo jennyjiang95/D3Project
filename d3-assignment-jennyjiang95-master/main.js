@@ -1,7 +1,12 @@
 //knowledge points:
 // 1. d3-force: charge and collide
 // 2. GeoJSON and CSV: d3.queue()
-// 3. 
+// 3. use libaries: d3.geoAlbersUsa() map project
+// 4. d3.scaleSqrt() size the circles
+// 5. d3.scaleQuantize() code encode the circle fill
+// 6. d3-legend
+
+
 
 // Define margin
 var margin = { top: 20, right: 20, bottom: 100, left: 40 },
@@ -51,9 +56,28 @@ var tooltip = d3.select('body')
 	.text('');
 
 // Add the toggle button
-var button = d3.select('body')
-  .append('button')
-  .text('Total Population');
+// var button = d3.select('body')
+//   .append('button')
+//   .text('Total Population');
+
+// add button text 
+var buttonPanel = d3.select('body')
+	.append('div');
+var buttonLabel = buttonPanel
+	.append('span')
+	.text('Toggle category: ');
+var button = buttonPanel
+	.append('button')
+	.text('Total Population');
+
+// draw legend
+var legend = svg.selectAll(".legend")
+	.data(color.range())
+	.enter()
+	.append("g")
+	.attr("class", "legend")
+	.attr("transform", function(d, i) { return "translate(-850," + i * 30 + ")"; });
+
 
 // We will use this boolean flag to keep track of the toggle status
 var populationMode = true;
@@ -149,14 +173,6 @@ function setupChart(pop_income, geojson) {
 	// Call ticked with nodes
 	ticked(nodes);
 
-	// draw legend
-	var legend = svg.selectAll(".legend")
-	.data(color.range())
-	.enter()
-	.append("g")
-	.attr("class", "legend")
-	.attr("transform", function(d, i) { return "translate(-850," + i * 30 + ")"; });
-
 	// draw legend colored rectangles
 	legend.append("rect")
 	.attr("x", width - 18)
@@ -166,7 +182,7 @@ function setupChart(pop_income, geojson) {
 
 	// draw legend text
 	legend.append("text")
-	.attr("x", width - 24)
+	.attr("x", width)
 	.attr("y", 9)
 	.attr("dy", ".35em")
 	.style("text-anchor", "end")
@@ -228,6 +244,8 @@ function updateChart(pop_income, geojson) {
 		radiusValue = 'income';
 		button.text('Median Income');
 	}
+
+
 	var simulation = d3.forceSimulation(nodes)
 		.force('charge', d3.forceManyBody().strength(1))
 		.force(
@@ -316,4 +334,11 @@ function ticked(nodes) {
 
 
 }   ///////////////////////////////  end of the ticked chart function
+
+
+
+
+
+
+
 
