@@ -71,6 +71,13 @@ var button = buttonPanel
 	.text('Total Population');
 
 // draw legend
+
+var legendPanel = svg.selectAll(".legend")
+	.append('div')
+var legendLabel = legendPanel   //this does not work. LOL.
+	.append('span') 
+	.text('Total Population ');
+
 var legend = svg.selectAll(".legend")
 	.data(color.range())
 	.enter()
@@ -173,20 +180,24 @@ function setupChart(pop_income, geojson) {
 	// Call ticked with nodes
 	ticked(nodes);
 
+
+
 	// draw legend colored rectangles
 	legend.append("rect")
-	.attr("x", width - 18)
+	.attr("x", width - 70)
 	.attr("width", 18)
 	.attr("height", 18)
 	.style("fill", function(d) {return d;});
 
 	// draw legend text
 	legend.append("text")
-	.attr("x", width)
+	.attr("x", width + 20)
 	.attr("y", 9)
 	.attr("dy", ".35em")
 	.style("text-anchor", "end")
 	.text(function(d) { return d;});
+
+
 }   ///////////////////////////////  end of the setup chart function
 
 // @function updateChart Contains the logic for updating the chart simulation
@@ -280,6 +291,9 @@ function ticked(nodes) {
 		});
 
 
+
+
+
 	bubbles.enter()
 		.append('circle')
 		.merge(bubbles)  // the merge, will allow us to create the circle and udpate bubbles at the same time
@@ -331,6 +345,17 @@ function ticked(nodes) {
 			// })
 			.attr('stroke', '#333')
 				.text(function(d) { return d.label;})
+
+
+		// create text on the circles  // this does not work
+		// var elem = svg.selectAll('g')
+		// 	.data(nodes);
+
+		// /*Create and place the "blocks" containing the circle and the text */  
+	 //    var elemEnter = elem.enter()
+	 //        .append("g")
+	 //        .attr("transform", function(d){return "translate("+d.r+",80)"})
+
 
 
 }   ///////////////////////////////  end of the ticked chart function
