@@ -19,7 +19,8 @@ var svg = d3.select('body').append('svg')
 	.attr('width', width + margin.left + margin.right)
 	.attr('height', height + margin.top + margin.bottom)
 	.append('g')
-	.attr('transform', `translate(${margin.left}, ${margin.top})`);
+	.attr('transform', `translate(${margin.left}, ${height - 30})`);
+	// .attr('transform', `translate(${margin.left}, ${margin.top})`);
 	
 // var area = d3.scaleSqrt()
 //  .range([2, 50]);
@@ -72,13 +73,15 @@ var button = buttonPanel
 
 // draw legend
 
-var legendPanel = svg.selectAll(".legend")
-	.append('div')
+var legendPanel = svg.append('g')
+	.attr("transform", "translate(100," + (height - 200) + ");");
 var legendLabel = legendPanel   //this does not work. LOL.
-	.append('span') 
+	.append('text') 
+	.attr("dy", -20)
+	.attr('dx', -30)
 	.text('Total Population ');
 
-var legend = svg.selectAll(".legend")
+var legend = legendPanel.selectAll(".legend")
 	.data(color.range())
 	.enter()
 	.append("g")
@@ -183,19 +186,26 @@ function setupChart(pop_income, geojson) {
 
 
 	// draw legend colored rectangles
-	legend.append("rect")
-	.attr("x", width - 70)
-	.attr("width", 18)
-	.attr("height", 18)
+	legend.append("circle")
+	.attr("cx", width - 70)
+	.attr('r', 9)
+	// .attr("width", 18)
+	// .attr("height", 18)
 	.style("fill", function(d) {return d;});
 
 	// draw legend text
 	legend.append("text")
-	.attr("x", width + 20)
-	.attr("y", 9)
-	.attr("dy", ".35em")
+	.attr("x", width + 40)
+	.attr('dy', 9)
 	.style("text-anchor", "end")
-	.text(function(d) { return d;});
+	.text(function(d) { 
+		var range = color.invertExtent(d);
+		var fmt = d3.format('.1s');
+		return fmt(radius.invert(range[0])) + 
+			" to " 
+			+ fmt(radius.invert(range[1]));
+		
+		});
 
 
 }   ///////////////////////////////  end of the setup chart function
@@ -250,10 +260,12 @@ function updateChart(pop_income, geojson) {
 	// Define all force simulation objects
 	if (populationMode) {
 		radiusValue = 'pop';
-		button.text('Total Population');
+		button.text('Total Population')
+		legendLabel.text('Total Population');
 	} else {
 		radiusValue = 'income';
-		button.text('Median Income');
+		button.text('Median Income')
+		legendLabel.text("Median Income");
 	}
 
 
@@ -293,15 +305,10 @@ function ticked(nodes) {
 
 
 
-
 	bubbles.enter()
 		.append('circle')
 		.merge(bubbles)  // the merge, will allow us to create the circle and udpate bubbles at the same time
-		// .append('text')
-		.attr('r', (d) => d.r)   // i can't change the radius
-		// .attr('r', function(d) {
-		// 	return radius(d.pop);
-		// })
+		.attr('r', (d) => d.r)   
 		.attr('cx', function (d) {
 			return d.x;
 		})
@@ -309,9 +316,6 @@ function ticked(nodes) {
 			return d.y;
 		})
 		.attr('fill', (d) => color(d.r))
-		// .attr('fill', function (d) {
-		// 	return color(d.toal_pop);
-		// })
 		.attr('stroke', '#333')
 			.text(function(d) { return d.label;})
 		.on('mouseover', function(d) {
@@ -328,33 +332,51 @@ function ticked(nodes) {
 			d3.select(this).attr('stroke', '#333');
 			});
 
-		bubbles.enter()
-			.append('circle')
-			.merge(bubbles)  // the merge, will allow us to create the circle and udpate bubbles at the same time
-			.append('text')
-			.attr('r', (d) => d.r)   
-			.attr('cx', function (d) {
-				return d.x;
-			})
-			.attr('cy', function (d) {
-				return d.y;
-			})
-			.attr('fill', (d) => color(d.r))
-			// .attr('fill', function (d) {
-			// 	return color(d.toal_pop);
-			// })
-			.attr('stroke', '#333')
-				.text(function(d) { return d.label;})
 
 
-		// create text on the circles  // this does not work
-		// var elem = svg.selectAll('g')
-		// 	.data(nodes);
+	var enter = bubbles.enter()
+		.append('g')
+		.attr('class', 'bubbles');
 
-		// /*Create and place the "blocks" containing the circle and the text */  
-	 //    var elemEnter = elem.enter()
-	 //        .append("g")
-	 //        .attr("transform", function(d){return "translate("+d.r+",80)"})
+	enter.append('circle')
+	enter.append('text')
+
+	enter.merge(bubbles)
+		.select("text")
+			.attr('text-anchor', 'middle')
+			.attr("dy", ".3em")
+			.text(function(d) { return d.label;});
+
+	
+	// enter.merge(bubbles)
+	//   .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+
+	// enter.merge(bubbles)
+	// 	.select('circle')  // the merge, will allow us to create the circle and udpate bubbles at the same time
+	// 	.attr('r', (d) => d.r)   
+	// 	.attr('cx', function (d) {
+	// 		return d.x;
+	// 	})
+	// 	.attr('cy', function (d) {
+	// 		return d.y;
+	// 	})
+	// 	.attr('fill', (d) => color(d.r))
+	// 	.attr('stroke', '#333')
+	// 		.text(function(d) { return d.label;})
+	// 	.on('mouseover', function(d) {
+	// 		tooltip.html(d.name + "<br>" + d.r.toLocaleString());
+	// 		tooltip.style('visibility', 'visible');
+	// 		d3.select(this).attr('stroke', 'green');
+	// 		})
+	// 	.on('mousemove', function() {
+	// 		tooltip.style('top', (d3.event.pageY - 10) + 'px')
+	// 			.style('left', (d3.event.pageX + 10) + 'px');
+	// 	})
+	// 	.on('mouseout', function() {
+	// 		tooltip.style('visibility', 'hidden');
+	// 		d3.select(this).attr('stroke', '#333');
+	// 	});
 
 
 
